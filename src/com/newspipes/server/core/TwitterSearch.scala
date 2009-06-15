@@ -9,7 +9,6 @@ class TwitterSearch {
     val urlFetchService = URLFetchServiceFactory.getURLFetchService
     val response = urlFetchService.fetch(new URL("http://search.twitter.com/search.atom?q=" + query + "&rpp=10"))
     val stringValue = new String(response.getContent)
-    println("got = " + stringValue)
     val xml = XML.loadString(stringValue)
     val urls = extractUrls(xml \ "entry")
     val results = urls.mkString
@@ -22,19 +21,31 @@ class TwitterSearch {
   }
   
   def extractUrl(element: Node) : Seq[Option[String]] = {
-    element \ "content" map (a => extractUrlFromContent(a.toString)) 
+    element \ "content" map (a => a.child) flatMap (a => a) foreach println//map {case t: Text => extractUrlFromContent(t.text); case _ => None}
+    None::Nil
   }
   
-  case class ExternalLink {
+  object ExternalLink {
     import java.util.regex.Pattern._
-    
-    val urlPattern = compile(""".*a href="(.*)".*""") 
+    val urlPattern = compile("a href=\"(.*?)\"")
+
     def unapply(str: String): Option[String] = {
-      
+      val matcher = urlPattern.matcher(str)
+      matcher.find() match {
+        case true  => {
+          println("matching " + str)
+          Some(matcher.group(1))
+        }
+        case false => {
+          println ("not matching " + str)
+          None
+        }
+      }
     }
   }
   
   def extractUrlFromContent(content: String) : Option[String] = content match {
-    case Some(content)
+    case ExternalLink(link) => Some(link)
+    case _ => None
   }
 }

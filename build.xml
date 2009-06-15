@@ -1,4 +1,4 @@
-<project>
+<project >
   <!-- Scala related tasks -->
   <taskdef name="scalac" classname="scala.tools.ant.Scalac">
     <classpath>
@@ -9,15 +9,17 @@
 
 	<property name="sdk.dir" location="../appengine-java-sdk" />
   <property name="srcfiles"         value="**/*.java, **/*.scala" />
-  <property name="javafiles"         value="**/*.java" />
-  <property name="scalafiles"         value="**/*.scala" />
+  <property name="javafiles"        value="**/*.java" />
+  <property name="scalafiles"       value="**/*.scala" />
   <property name="srcdir"           value="src" />
+  <property name="testdir"           value="test" />
   <property name="dstdir"           value="war/WEB-INF/classes" />
+  <property name="classname"        value="" />
 
   <import file="${sdk.dir}/config/user/ant-macros.xml" />
 
   <path id="project.classpath">
-    <pathelement path="war/WEB-INF/classes" />
+    <pathelement path="${dstdir}" />
     <fileset dir="war/WEB-INF/lib">
       <include name="**/*.jar" />
     </fileset>
@@ -40,6 +42,16 @@
   	<delete dir="war/WEB-INF/classes" />
   </target>
 
+  <target name="test" depends="compile" description="run teh tests">
+
+    <junit printsummary="yes" haltonfailure="no">
+      <classpath refid="project.classpath"/>
+      <formatter type="plain" usefile="false"/>
+      <test name="${classname}" haltonfailure="no"/>
+    </junit>
+
+  </target>
+
   <target name="compile" depends="copyjars" description="Compiles Java source and copies other source files to the WAR.">
     <mkdir dir="${dstdir}" />
     <copy todir="${dstdir}">
@@ -55,6 +67,16 @@
       <classpath refid="project.classpath"/>
     </scalac>
     <javac srcdir="${srcdir}"
+            destdir="${dstdir}"
+            classpathref="project.classpath"
+            debug="on" />
+    <scalac
+      destdir="${dstdir}"
+      scalacdebugging="yes">
+      <src path="${testdir}"/>
+      <classpath refid="project.classpath"/>
+    </scalac>
+    <javac srcdir="${testdir}"
             destdir="${dstdir}"
             classpathref="project.classpath"
             debug="on" />
