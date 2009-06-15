@@ -17,17 +17,18 @@ class TwitterSearch {
   }
   
   def extractUrls(xml:  NodeSeq) : Seq[String] = {
-    xml map (n => extractUrl(n)) flatMap (a => a) filter {case None => false; case _ => true} map {case Some(url) => url; case None => throw new RuntimeException("impossible reach")}
+    xml map (n => extractUrl(n)) filter {case None => false; case _ => true} map {case Some(url) => url; case None => throw new RuntimeException("impossible reach")}
   }
   
-  def extractUrl(element: Node) : Seq[Option[String]] = {
-    element \ "content" map (a => a.child) flatMap (a => a) foreach println//map {case t: Text => extractUrlFromContent(t.text); case _ => None}
-    None::Nil
+  def extractUrl(element: Node) : Option[String] = {
+    val str = element \ "content" map (a => a.child) flatMap (a => a) mkString("")
+    println(str)
+    extractUrlFromContent(str)
   }
   
   object ExternalLink {
     import java.util.regex.Pattern._
-    val urlPattern = compile("a href=\"(.*?)\"")
+    val urlPattern = compile("a href=&quot;(.*?)&quot;")
 
     def unapply(str: String): Option[String] = {
       val matcher = urlPattern.matcher(str)

@@ -14,15 +14,15 @@ class TestSearch extends TestCase with Assert {
 
   def testWithLink : Unit = {
     val search = new TwitterSearch
-    var result = search.extractUrlFromContent("""something a href="http://www.linkedin.com" end""")
+    var result = search.extractUrlFromContent("""something a href=&quot;http://www.linkedin.com&quot; end""")
     assertEquals("got " + result.toString, Some("http://www.linkedin.com"), result)
-    result = search.extractUrlFromContent("""something a href="http://www.linkedin.com" a href="http://www.linkedin2.com" end""")
+    result = search.extractUrlFromContent("""something a href=&quot;http://www.linkedin.com&quot; a href=&quot;http://www.linkedin2.com&quot; end""")
     assertEquals("got " + result.toString, Some("http://www.linkedin.com"), result)
   }
 
   def testXmlWithLink : Unit = {
     val search = new TwitterSearch
-    val link = "http://www.site.com/something&param=aaa"
+    val link = "http://www.site.com/something&amp;param=aaa"
     val xml = <feed xmlns:google="http://base.google.com/ns/1.0" xml:lang="en-US" xmlns:openSearch="http://a9.com/-/spec/opensearch/1.1/" xmlns="http://www.w3.org/2005/Atom" xmlns:twitter="http://api.twitter.com/">
                 <id>tag:search.twitter.com,2005:search/scala</id>
                 <link type="text/html" rel="alternate" href="http://search.twitter.com/search?q=scala"/>
@@ -67,11 +67,10 @@ class TestSearch extends TestCase with Assert {
                 </feed>;
     val elements = xml \ "entry"
     assertEquals(2, elements.size)
-    assertEquals(None, search.extractUrl(elements(0))(0))
-    assertEquals(Some(link), search.extractUrl(elements(1))(0))
+    assertEquals(Some(link), search.extractUrl(elements(0)))
+    assertEquals(None, search.extractUrl(elements(1)))
     var result = search.extractUrls(elements)
     assertEquals(1, result.size)
     assertEquals(link, result(0))
   }
-
 }
