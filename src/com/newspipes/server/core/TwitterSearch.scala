@@ -15,7 +15,7 @@ class TwitterSearch {
   }
   
   def extractUrls(xml:  Elem) : Seq[String] = {
-    xml.child map(extractUrl) filter {case None => false; case _ => true} map {case Some(url) => url}
+    xml.child map(extractUrl) filter {case None => false; case _ => true} map {case Some(url) => url; case None => throw new RuntimeException("impossible reach")}
   }
   
   def extractUrl(element: Node) : Option[String] = element match {

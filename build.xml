@@ -1,5 +1,18 @@
 <project>
-  <property name="sdk.dir" location="../appengine-java-sdk" />
+  <!-- Scala related tasks -->
+  <taskdef name="scalac" classname="scala.tools.ant.Scalac">
+    <classpath>
+      <pathelement path="war/WEB-INF/lib/scala-compiler.jar" />
+      <pathelement path="war/WEB-INF/lib/scala-library.jar" />
+    </classpath>
+  </taskdef>
+
+	<property name="sdk.dir" location="../appengine-java-sdk" />
+  <property name="srcfiles"         value="**/*.java, **/*.scala" />
+  <property name="javafiles"         value="**/*.java" />
+  <property name="scalafiles"         value="**/*.scala" />
+  <property name="srcdir"           value="src" />
+  <property name="dstdir"           value="war/WEB-INF/classes" />
 
   <import file="${sdk.dir}/config/user/ant-macros.xml" />
 
@@ -23,15 +36,26 @@
     </copy>
   </target>
 
+  <target name="clean" depends="copyjars" description="cleans up the classes">
+  	<delete dir="war/WEB-INF/classes" />
+  </target>
+
   <target name="compile" depends="copyjars" description="Compiles Java source and copies other source files to the WAR.">
-    <mkdir dir="war/WEB-INF/classes" />
-    <copy todir="war/WEB-INF/classes">
-      <fileset dir="src">
-        <exclude name="**/*.java, **/*.scala" />
+    <mkdir dir="${dstdir}" />
+    <copy todir="${dstdir}">
+      <fileset dir="${srcdir}">
+        <exclude name="${javafiles}" />
+        <exclude name="${scalafiles}" />
       </fileset>
     </copy>
-    <javac srcdir="src"
-            destdir="war/WEB-INF/classes"
+    <scalac
+      destdir="${dstdir}"
+      scalacdebugging="yes">
+      <src path="${srcdir}"/>
+      <classpath refid="project.classpath"/>
+    </scalac>
+    <javac srcdir="${srcdir}"
+            destdir="${dstdir}"
             classpathref="project.classpath"
             debug="on" />
   </target>
