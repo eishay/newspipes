@@ -60,7 +60,7 @@
             debug="on" />
   </target>
 
-  <target name="runserver" depends="compile" description="Starts the development server.">
+  <target name="runserver-debug" depends="compile" description="Starts the development server.">
     <dev_appserver war="war" port="8888" >
       <options>
         <arg value="--jvm_flag=-Xdebug"/>
@@ -68,7 +68,12 @@
       </options>
     </dev_appserver>
   </target>
-	
+  
+  <target name="runserver" depends="compile" description="Starts the development server.">
+    <dev_appserver war="war" port="8888" >
+    </dev_appserver>
+  </target>
+  
   <target name="update" depends="compile"
       description="Uploads the application to App Engine.">
     <appcfg action="update" war="war" />
