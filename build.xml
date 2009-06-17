@@ -82,8 +82,8 @@
       <!--jvmarg value="-Xss16M"/-->
       <jvmarg value="-Xmx256M"/>
       <jvmarg line="${XstartOnFirstThread}"/>
-      <arg line="-logLevel INFO"/>
-      <arg line="-style PRETTY"/>
+      <!--arg line="-logLevel INFO"/>
+      <arg line="-style PRETTY"/-->
       <arg value="com.newspipes.Newspipes"/>
     </java>
   </target>
@@ -142,12 +142,12 @@
       <jvmarg value="-Xmx512m"/>
       <jvmarg line="${XstartOnFirstThread}"/>
       <arg value="-startupUrl"/>
-      <arg line="-logLevel DEBUG"/>
-      <arg line="-style PRETTY"/>
+      <!--arg line="-logLevel DEBUG"/-->
+      <!--arg line="-style PRETTY"/-->
       <arg value="Newspipes.html"/>
       <arg value="-server"/>
       <arg value="com.google.appengine.tools.development.gwt.AppEngineLauncher"/>
-      <arg value="com.newspipes.client.Newspipes"/>
+      <arg value="com.newspipes.Newspipes"/>
     </java>
   </target>
 
