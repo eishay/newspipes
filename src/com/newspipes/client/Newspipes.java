@@ -18,7 +18,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class NewspipesGwtEntry implements EntryPoint
+public class Newspipes implements EntryPoint
 {
   /**
    * The message displayed to the user when the server cannot be reached or
@@ -28,9 +28,9 @@ public class NewspipesGwtEntry implements EntryPoint
       "An error occurred while " + "attempting to contact the server. Please check your network " + "connection and try again.";
 
   /**
-   * Create a remote service proxy to talk to the server-side Greeting service.
+   * Create a remote service proxy to talk to the server-side NewsPipesService service.
    */
-  private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
+  private final NewsPipesServiceAsync newsPipesService = GWT.create(NewsPipesService.class);
 
   /**
    * This is the entry point method.
@@ -114,7 +114,7 @@ public class NewspipesGwtEntry implements EntryPoint
         String textToServer = nameField.getText();
         textToServerLabel.setText(textToServer);
         serverResponseLabel.setText("");
-        greetingService.greetServer(textToServer, new AsyncCallback<String>()
+        newsPipesService.search(textToServer, new AsyncCallback<String>()
         {
           public void onFailure(Throwable caught)
           {

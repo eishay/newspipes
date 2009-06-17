@@ -1,20 +1,19 @@
 function newspipes(){
-  var $intern_0 = '', $intern_27 = '" for "gwt:onLoadErrorFn"', $intern_25 = '" for "gwt:onPropertyErrorFn"', $intern_10 = '"><\/script>', $intern_12 = '#', $intern_14 = '/', $intern_48 = '1A79E588075EAFC3A007649B01BE7D3A.cache.html', $intern_45 = '2EFEC42A7EE0436F8857891DD0C476F3.cache.html', $intern_46 = '3CBD72C82D6007DC70B346413BC2BF9C.cache.html', $intern_47 = '80E68CD0C865316DBD8846F4477D7F48.cache.html', $intern_44 = '88F89B4BDFCF40951F62C907AD434CCC.cache.html', $intern_56 = '<script defer="defer">newspipes.onInjectionDone(\'newspipes\')<\/script>', $intern_9 = '<script id="', $intern_22 = '=', $intern_13 = '?', $intern_24 = 'Bad handler "', $intern_55 = 'DOMContentLoaded', $intern_11 = 'SCRIPT', $intern_8 = '__gwt_marker_newspipes', $intern_15 = 'base', $intern_4 = 'begin', $intern_3 = 'bootstrap', $intern_17 = 'clear.cache.gif', $intern_21 = 'content', $intern_7 = 'end', $intern_38 = 'gecko', $intern_39 = 'gecko1_8', $intern_5 = 'gwt.hybrid', $intern_49 = 'gwt/standard/standard.css', $intern_26 = 'gwt:onLoadErrorFn', $intern_23 = 'gwt:onPropertyErrorFn', $intern_20 = 'gwt:property', $intern_54 = 'head', $intern_42 = 'hosted.html?newspipes', $intern_53 = 'href', $intern_37 = 'ie6', $intern_28 = 'iframe', $intern_16 = 'img', $intern_29 = "javascript:''", $intern_50 = 'link', $intern_41 = 'loadExternalRefs', $intern_18 = 'meta', $intern_31 = 'moduleRequested', $intern_6 = 'moduleStartup', $intern_36 = 'msie', $intern_19 = 'name', $intern_1 = 'newspipes', $intern_33 = 'opera', $intern_30 = 'position:absolute;width:0;height:0;border:none', $intern_51 = 'rel', $intern_35 = 'safari', $intern_43 = 'selectingPermutation', $intern_2 = 'startup', $intern_52 = 'stylesheet', $intern_40 = 'unknown', $intern_32 = 'user.agent', $intern_34 = 'webkit';
-  var $wnd = window, $doc = document, $stats = $wnd.__gwtStatsEvent?function(a){
-    return $wnd.__gwtStatsEvent(a);
+  var $wnd_0 = window, $doc_0 = document, $stats = $wnd_0.__gwtStatsEvent?function(a){
+    return $wnd_0.__gwtStatsEvent(a);
   }
-  :null, scriptsDone, loadDone, bodyDone, base = $intern_0, metaProps = {}, values = [], providers = [], answers = [], onLoadErrorFunc, propertyErrorFunc;
-  $stats && $stats({moduleName:$intern_1, subSystem:$intern_2, evtGroup:$intern_3, millis:(new Date()).getTime(), type:$intern_4});
-  if (!$wnd.__gwt_stylesLoaded) {
-    $wnd.__gwt_stylesLoaded = {};
+  :null, scriptsDone, loadDone, bodyDone, base = '', metaProps = {}, values = [], providers = [], answers = [], onLoadErrorFunc, propertyErrorFunc;
+  $stats && $stats({moduleName:'newspipes', subSystem:'startup', evtGroup:'bootstrap', millis:(new Date()).getTime(), type:'begin'});
+  if (!$wnd_0.__gwt_stylesLoaded) {
+    $wnd_0.__gwt_stylesLoaded = {};
   }
-  if (!$wnd.__gwt_scriptsLoaded) {
-    $wnd.__gwt_scriptsLoaded = {};
+  if (!$wnd_0.__gwt_scriptsLoaded) {
+    $wnd_0.__gwt_scriptsLoaded = {};
   }
   function isHostedMode(){
     var result = false;
     try {
-      result = $wnd.external && ($wnd.external.gwtOnLoad && $wnd.location.search.indexOf($intern_5) == -1);
+      result = $wnd_0.external && ($wnd_0.external.gwtOnLoad && $wnd_0.location.search.indexOf('gwt.hybrid') == -1);
     }
      catch (e) {
     }
@@ -27,59 +26,59 @@ function newspipes(){
 
   function maybeStartModule(){
     if (scriptsDone && loadDone) {
-      var iframe = $doc.getElementById($intern_1);
+      var iframe = $doc_0.getElementById('newspipes');
       var frameWnd = iframe.contentWindow;
       if (isHostedMode()) {
-        frameWnd.__gwt_getProperty = function(name){
-          return computePropValue(name);
+        frameWnd.__gwt_getProperty = function(name_0){
+          return computePropValue(name_0);
         }
         ;
       }
       newspipes = null;
-      frameWnd.gwtOnLoad(onLoadErrorFunc, $intern_1, base);
-      $stats && $stats({moduleName:$intern_1, subSystem:$intern_2, evtGroup:$intern_6, millis:(new Date()).getTime(), type:$intern_7});
+      frameWnd.gwtOnLoad(onLoadErrorFunc, 'newspipes', base);
+      $stats && $stats({moduleName:'newspipes', subSystem:'startup', evtGroup:'moduleStartup', millis:(new Date()).getTime(), type:'end'});
     }
   }
 
   function computeScriptBase(){
-    var thisScript, markerId = $intern_8, markerScript;
-    $doc.write($intern_9 + markerId + $intern_10);
-    markerScript = $doc.getElementById(markerId);
+    var thisScript, markerId = '__gwt_marker_newspipes', markerScript;
+    $doc_0.write('<script id="' + markerId + '"><\/script>');
+    markerScript = $doc_0.getElementById(markerId);
     thisScript = markerScript && markerScript.previousSibling;
-    while (thisScript && thisScript.tagName != $intern_11) {
+    while (thisScript && thisScript.tagName != 'SCRIPT') {
       thisScript = thisScript.previousSibling;
     }
     function getDirectoryOfFile(path){
-      var hashIndex = path.lastIndexOf($intern_12);
+      var hashIndex = path.lastIndexOf('#');
       if (hashIndex == -1) {
         hashIndex = path.length;
       }
-      var queryIndex = path.indexOf($intern_13);
+      var queryIndex = path.indexOf('?');
       if (queryIndex == -1) {
         queryIndex = path.length;
       }
-      var slashIndex = path.lastIndexOf($intern_14, Math.min(queryIndex, hashIndex));
-      return slashIndex >= 0?path.substring(0, slashIndex + 1):$intern_0;
+      var slashIndex = path.lastIndexOf('/', Math.min(queryIndex, hashIndex));
+      return slashIndex >= 0?path.substring(0, slashIndex + 1):'';
     }
 
     ;
     if (thisScript && thisScript.src) {
       base = getDirectoryOfFile(thisScript.src);
     }
-    if (base == $intern_0) {
-      var baseElements = $doc.getElementsByTagName($intern_15);
+    if (base == '') {
+      var baseElements = $doc_0.getElementsByTagName('base');
       if (baseElements.length > 0) {
         base = baseElements[baseElements.length - 1].href;
       }
        else {
-        base = getDirectoryOfFile($doc.location.href);
+        base = getDirectoryOfFile($doc_0.location.href);
       }
     }
      else if (base.match(/^\w+:\/\//)) {
     }
      else {
-      var img = $doc.createElement($intern_16);
-      img.src = base + $intern_17;
+      var img = $doc_0.createElement('img');
+      img.src = base + 'clear.cache.gif';
       base = getDirectoryOfFile(img.src);
     }
     if (markerScript) {
@@ -88,44 +87,44 @@ function newspipes(){
   }
 
   function processMetas(){
-    var metas = document.getElementsByTagName($intern_18);
+    var metas = document.getElementsByTagName('meta');
     for (var i = 0, n = metas.length; i < n; ++i) {
-      var meta = metas[i], name = meta.getAttribute($intern_19), content;
-      if (name) {
-        if (name == $intern_20) {
-          content = meta.getAttribute($intern_21);
+      var meta = metas[i], name_0 = meta.getAttribute('name'), content;
+      if (name_0) {
+        if (name_0 == 'gwt:property') {
+          content = meta.getAttribute('content');
           if (content) {
-            var value, eq = content.indexOf($intern_22);
+            var value, eq = content.indexOf('=');
             if (eq >= 0) {
-              name = content.substring(0, eq);
+              name_0 = content.substring(0, eq);
               value = content.substring(eq + 1);
             }
              else {
-              name = content;
-              value = $intern_0;
+              name_0 = content;
+              value = '';
             }
-            metaProps[name] = value;
+            metaProps[name_0] = value;
           }
         }
-         else if (name == $intern_23) {
-          content = meta.getAttribute($intern_21);
+         else if (name_0 == 'gwt:onPropertyErrorFn') {
+          content = meta.getAttribute('content');
           if (content) {
             try {
               propertyErrorFunc = eval(content);
             }
              catch (e) {
-              alert($intern_24 + content + $intern_25);
+              alert('Bad handler "' + content + '" for "gwt:onPropertyErrorFn"');
             }
           }
         }
-         else if (name == $intern_26) {
-          content = meta.getAttribute($intern_21);
+         else if (name_0 == 'gwt:onLoadErrorFn') {
+          content = meta.getAttribute('content');
           if (content) {
             try {
               onLoadErrorFunc = eval(content);
             }
              catch (e) {
-              alert($intern_24 + content + $intern_27);
+              alert('Bad handler "' + content + '" for "gwt:onLoadErrorFn"');
             }
           }
         }
@@ -160,49 +159,49 @@ function newspipes(){
   function maybeInjectFrame(){
     if (!frameInjected) {
       frameInjected = true;
-      var iframe = $doc.createElement($intern_28);
-      iframe.src = $intern_29;
-      iframe.id = $intern_1;
-      iframe.style.cssText = $intern_30;
+      var iframe = $doc_0.createElement('iframe');
+      iframe.src = "javascript:''";
+      iframe.id = 'newspipes';
+      iframe.style.cssText = 'position:absolute;width:0;height:0;border:none';
       iframe.tabIndex = -1;
-      $doc.body.appendChild(iframe);
-      $stats && $stats({moduleName:$intern_1, subSystem:$intern_2, evtGroup:$intern_6, millis:(new Date()).getTime(), type:$intern_31});
+      $doc_0.body.appendChild(iframe);
+      $stats && $stats({moduleName:'newspipes', subSystem:'startup', evtGroup:'moduleStartup', millis:(new Date()).getTime(), type:'moduleRequested'});
       iframe.contentWindow.location.replace(base + strongName);
     }
   }
 
-  providers[$intern_32] = function(){
+  providers['user.agent'] = function(){
     var ua = navigator.userAgent.toLowerCase();
     var makeVersion = function(result){
       return parseInt(result[1]) * 1000 + parseInt(result[2]);
     }
     ;
-    if (ua.indexOf($intern_33) != -1) {
-      return $intern_33;
+    if (ua.indexOf('opera') != -1) {
+      return 'opera';
     }
-     else if (ua.indexOf($intern_34) != -1) {
-      return $intern_35;
+     else if (ua.indexOf('webkit') != -1) {
+      return 'safari';
     }
-     else if (ua.indexOf($intern_36) != -1) {
-      var result = /msie ([0-9]+)\.([0-9]+)/.exec(ua);
-      if (result && result.length == 3) {
-        if (makeVersion(result) >= 6000) {
-          return $intern_37;
+     else if (ua.indexOf('msie') != -1) {
+      var result_0 = /msie ([0-9]+)\.([0-9]+)/.exec(ua);
+      if (result_0 && result_0.length == 3) {
+        if (makeVersion(result_0) >= 6000) {
+          return 'ie6';
         }
       }
     }
-     else if (ua.indexOf($intern_38) != -1) {
-      var result = /rv:([0-9]+)\.([0-9]+)/.exec(ua);
-      if (result && result.length == 3) {
-        if (makeVersion(result) >= 1008)
-          return $intern_39;
+     else if (ua.indexOf('gecko') != -1) {
+      var result_0 = /rv:([0-9]+)\.([0-9]+)/.exec(ua);
+      if (result_0 && result_0.length == 3) {
+        if (makeVersion(result_0) >= 1008)
+          return 'gecko1_8';
       }
-      return $intern_38;
+      return 'gecko';
     }
-    return $intern_40;
+    return 'unknown';
   }
   ;
-  values[$intern_32] = {gecko:0, gecko1_8:1, ie6:2, opera:3, safari:4};
+  values['user.agent'] = {gecko:0, gecko1_8:1, ie6:2, opera:3, safari:4};
   newspipes.onScriptLoad = function(){
     if (frameInjected) {
       loadDone = true;
@@ -212,29 +211,29 @@ function newspipes(){
   ;
   newspipes.onInjectionDone = function(){
     scriptsDone = true;
-    $stats && $stats({moduleName:$intern_1, subSystem:$intern_2, evtGroup:$intern_41, millis:(new Date()).getTime(), type:$intern_7});
+    $stats && $stats({moduleName:'newspipes', subSystem:'startup', evtGroup:'loadExternalRefs', millis:(new Date()).getTime(), type:'end'});
     maybeStartModule();
   }
   ;
   computeScriptBase();
   var strongName;
   if (isHostedMode()) {
-    if ($wnd.external.initModule && $wnd.external.initModule($intern_1)) {
-      $wnd.location.reload();
+    if ($wnd_0.external.initModule && $wnd_0.external.initModule('newspipes')) {
+      $wnd_0.location.reload();
       return;
     }
-    strongName = $intern_42;
+    strongName = 'hosted.html?newspipes';
   }
   processMetas();
-  $stats && $stats({moduleName:$intern_1, subSystem:$intern_2, evtGroup:$intern_3, millis:(new Date()).getTime(), type:$intern_43});
+  $stats && $stats({moduleName:'newspipes', subSystem:'startup', evtGroup:'bootstrap', millis:(new Date()).getTime(), type:'selectingPermutation'});
   if (!strongName) {
     try {
-      unflattenKeylistIntoAnswers([$intern_39], $intern_44);
-      unflattenKeylistIntoAnswers([$intern_33], $intern_45);
-      unflattenKeylistIntoAnswers([$intern_38], $intern_46);
-      unflattenKeylistIntoAnswers([$intern_35], $intern_47);
-      unflattenKeylistIntoAnswers([$intern_37], $intern_48);
-      strongName = answers[computePropValue($intern_32)];
+      unflattenKeylistIntoAnswers(['opera'], 'F0907EF7D701A15461405AE751A2E2DF.cache.html');
+      unflattenKeylistIntoAnswers(['safari'], '5D8ACCB11AF1CA9855A42568448BCAF6.cache.html');
+      unflattenKeylistIntoAnswers(['gecko1_8'], '037BB51A89B92222D57AD9A52BE20BE7.cache.html');
+      unflattenKeylistIntoAnswers(['ie6'], 'AD4C86143147B80564CAE19C348FD6F0.cache.html');
+      unflattenKeylistIntoAnswers(['gecko'], '327E8CF02B57EB8DF248BCC316A1054C.cache.html');
+      strongName = answers[computePropValue('user.agent')];
     }
      catch (e) {
       return;
@@ -244,16 +243,16 @@ function newspipes(){
   function onBodyDone(){
     if (!bodyDone) {
       bodyDone = true;
-      if (!__gwt_stylesLoaded[$intern_49]) {
-        var l = $doc.createElement($intern_50);
-        __gwt_stylesLoaded[$intern_49] = l;
-        l.setAttribute($intern_51, $intern_52);
-        l.setAttribute($intern_53, base + $intern_49);
-        $doc.getElementsByTagName($intern_54)[0].appendChild(l);
+      if (!__gwt_stylesLoaded['gwt/standard/standard.css']) {
+        var l = $doc_0.createElement('link');
+        __gwt_stylesLoaded['gwt/standard/standard.css'] = l;
+        l.setAttribute('rel', 'stylesheet');
+        l.setAttribute('href', base + 'gwt/standard/standard.css');
+        $doc_0.getElementsByTagName('head')[0].appendChild(l);
       }
       maybeStartModule();
-      if ($doc.removeEventListener) {
-        $doc.removeEventListener($intern_55, onBodyDone, false);
+      if ($doc_0.removeEventListener) {
+        $doc_0.removeEventListener('DOMContentLoaded', onBodyDone, false);
       }
       if (onBodyDoneTimerId) {
         clearInterval(onBodyDoneTimerId);
@@ -261,23 +260,23 @@ function newspipes(){
     }
   }
 
-  if ($doc.addEventListener) {
-    $doc.addEventListener($intern_55, function(){
+  if ($doc_0.addEventListener) {
+    $doc_0.addEventListener('DOMContentLoaded', function(){
       maybeInjectFrame();
       onBodyDone();
     }
     , false);
   }
   var onBodyDoneTimerId = setInterval(function(){
-    if (/loaded|complete/.test($doc.readyState)) {
+    if (/loaded|complete/.test($doc_0.readyState)) {
       maybeInjectFrame();
       onBodyDone();
     }
   }
   , 50);
-  $stats && $stats({moduleName:$intern_1, subSystem:$intern_2, evtGroup:$intern_3, millis:(new Date()).getTime(), type:$intern_7});
-  $stats && $stats({moduleName:$intern_1, subSystem:$intern_2, evtGroup:$intern_41, millis:(new Date()).getTime(), type:$intern_4});
-  $doc.write($intern_56);
+  $stats && $stats({moduleName:'newspipes', subSystem:'startup', evtGroup:'bootstrap', millis:(new Date()).getTime(), type:'end'});
+  $stats && $stats({moduleName:'newspipes', subSystem:'startup', evtGroup:'loadExternalRefs', millis:(new Date()).getTime(), type:'begin'});
+  $doc_0.write('<script defer="defer">newspipes.onInjectionDone(\'newspipes\')<\/script>');
 }
 
 newspipes();

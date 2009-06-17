@@ -14,5 +14,5 @@
   <!-- Other module inherits                                      -->
 
   <!-- Specify the app entry point class.                         -->
-  <entry-point class='com.newspipes.client.NewspipesGwtEntry'/>
+  <entry-point class='com.newspipes.client.Newspipes'/>
 </module>

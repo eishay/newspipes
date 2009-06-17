@@ -7,35 +7,56 @@
     </classpath>
   </taskdef>
 
-	<property name="sdk.dir" location="../appengine-java-sdk" />
+	<property name="appengine.sdk"    location="../appengine-java-sdk" />
+  <property name="gwt.sdk"          location="../gwt" />
   <property name="srcfiles"         value="**/*.java, **/*.scala" />
   <property name="javafiles"        value="**/*.java" />
   <property name="scalafiles"       value="**/*.scala" />
   <property name="srcdir"           value="src" />
-  <property name="testdir"           value="test" />
+  <property name="testdir"          value="test" />
   <property name="dstdir"           value="war/WEB-INF/classes" />
   <property name="classname"        value="" />
 
-  <import file="${sdk.dir}/config/user/ant-macros.xml" />
+  <import file="${appengine.sdk}/config/user/ant-macros.xml" />
+
+  <condition property="XstartOnFirstThread" value="-XstartOnFirstThread">
+    <os family="mac"/>
+  </condition>
+  <condition property="XstartOnFirstThread" value="">
+    <not><os family="mac"/></not>
+  </condition>
 
   <path id="project.classpath">
     <pathelement path="${dstdir}" />
+    <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+    <fileset dir="${gwt.sdk}" includes="gwt-dev*.jar"/>
     <fileset dir="war/WEB-INF/lib">
       <include name="**/*.jar" />
     </fileset>
-    <fileset dir="${sdk.dir}/lib">
+    <fileset dir="${appengine.sdk}/lib">
       <include name="shared/**/*.jar" />
     </fileset>
   </path>
 
+  <path id="tools.class.path">
+    <path refid="project.classpath"/>
+    <pathelement location="${appengine.sdk}/lib/appengine-tools-api.jar"/>
+    <fileset dir="${appengine.sdk}/lib/tools">
+      <include name="**/asm-*.jar"/>
+      <include name="**/datanucleus-enhancer-*.jar"/>
+    </fileset>
+  </path>
+
+
   <target name="copyjars" description="Copies the App Engine JARs to the WAR.">
-    <copy
-        todir="war/WEB-INF/lib"
-        flatten="true">
-      <fileset dir="${sdk.dir}/lib/user">
+    <copy todir="war/WEB-INF/lib" flatten="true">
+      <fileset dir="${appengine.sdk}/lib/user">
         <include name="**/*.jar" />
       </fileset>
+      <fileset dir="${appengine.sdk}/lib/user" includes="**/*.jar"/>
     </copy>
+    <copy todir="war/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet.jar" />
+    <!-- Add any additional server libs that need to be copied -->
   </target>
 
   <target name="clean" depends="copyjars" description="cleans up the classes">
@@ -50,6 +71,21 @@
       <test name="${classname}" haltonfailure="no"/>
     </junit>
 
+  </target>
+
+  <target name="gwtc" depends="compile" description="GWT compile to JavaScript">
+    <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+      <classpath>
+        <pathelement location="${srcdir}"/>
+        <path refid="project.classpath"/>
+      </classpath>
+      <!--jvmarg value="-Xss16M"/-->
+      <jvmarg value="-Xmx256M"/>
+      <jvmarg line="${XstartOnFirstThread}"/>
+      <arg line="-logLevel INFO"/>
+      <arg line="-style PRETTY"/>
+      <arg value="com.newspipes.Newspipes"/>
+    </java>
   </target>
 
   <target name="compile" depends="copyjars" description="Compiles Java source and copies other source files to the WAR.">
@@ -69,6 +105,10 @@
     <javac srcdir="${srcdir}"
             destdir="${dstdir}"
             classpathref="project.classpath"
+            source="1.5"
+            target="1.5"
+            nowarn="true"
+            debuglevel="lines,vars,source"
             debug="on" />
     <scalac
       destdir="${dstdir}"
@@ -80,6 +120,35 @@
             destdir="${dstdir}"
             classpathref="project.classpath"
             debug="on" />
+    <taskdef
+       name="datanucleusenhancer"
+       classpathref="tools.class.path"
+       classname="org.datanucleus.enhancer.tools.EnhancerTask" />
+    <datanucleusenhancer
+       classpathref="tools.class.path"
+       failonerror="true">
+      <fileset dir="war/WEB-INF/classes" includes="**/*.class" />
+    </datanucleusenhancer>
+  </target>
+
+  <target name="hosted" depends="gwtc" description="Run hosted mode">
+    <java failonerror="true" fork="true" classname="com.google.gwt.dev.HostedMode">
+      <classpath>
+        <pathelement location="src"/>
+        <path refid="project.classpath"/>
+        <path refid="tools.class.path"/>
+      </classpath>
+      <jvmarg value="-Xms256m"/>
+      <jvmarg value="-Xmx512m"/>
+      <jvmarg line="${XstartOnFirstThread}"/>
+      <arg value="-startupUrl"/>
+      <arg line="-logLevel DEBUG"/>
+      <arg line="-style PRETTY"/>
+      <arg value="Newspipes.html"/>
+      <arg value="-server"/>
+      <arg value="com.google.appengine.tools.development.gwt.AppEngineLauncher"/>
+      <arg value="com.newspipes.client.Newspipes"/>
+    </java>
   </target>
 
   <target name="runserver-debug" depends="compile" description="Starts the development server.">
@@ -90,12 +159,12 @@
       </options>
     </dev_appserver>
   </target>
-  
+
   <target name="runserver" depends="compile" description="Starts the development server.">
     <dev_appserver war="war" port="8888" >
     </dev_appserver>
   </target>
-  
+
   <target name="update" depends="compile"
       description="Uploads the application to App Engine.">
     <appcfg action="update" war="war" />

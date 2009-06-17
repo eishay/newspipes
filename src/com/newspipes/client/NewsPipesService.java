@@ -6,8 +6,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 /**
  * The client side stub for the RPC service.
  */
-@RemoteServiceRelativePath("greet")
-public interface GreetingService extends RemoteService
+@RemoteServiceRelativePath("search")
+public interface NewsPipesService extends RemoteService
 {
-  String greetServer(String name);
+  String search(String name);
 }

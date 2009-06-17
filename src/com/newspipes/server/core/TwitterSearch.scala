@@ -5,15 +5,14 @@ import java.net.URL
 import scala.xml._
 
 class TwitterSearch {
-  def search(query: String) : String = {
+  def search(query: String) : Array[String] = {
     val urlFetchService = URLFetchServiceFactory.getURLFetchService
-    val response = urlFetchService.fetch(new URL("http://search.twitter.com/search.atom?q=" + query + "&rpp=10"))
+    val response = urlFetchService.fetch(new URL("http://search.twitter.com/search.atom?q=" + query + "&rpp=100"))
     val stringValue = new String(response.getContent)
     val xml = XML.loadString(stringValue)
     val urls = extractUrls(xml \ "entry")
-    val results = urls.mkString
-    println("results = " + results)
-    results
+    println("results = " + urls)
+    urls.toArray
   }
   
   def extractUrls(xml:  NodeSeq) : Seq[String] = {
@@ -29,13 +28,18 @@ class TwitterSearch {
   object ExternalLink {
     import java.util.regex.Pattern._
     val urlPattern = compile("a href=&quot;(.*?)&quot;")
+    val urlTwitterPattern = compile("""twitter\.com""")
 
     def unapply(str: String): Option[String] = {
       val matcher = urlPattern.matcher(str)
       matcher.find() match {
         case true  => {
           println("matching " + str)
-          Some(matcher.group(1))
+          val url = matcher.group(1)
+          urlTwitterPattern.matcher(url).find() match {
+            case true => None
+            case false => Some(url)
+          }
         }
         case false => {
           println ("not matching " + str)
