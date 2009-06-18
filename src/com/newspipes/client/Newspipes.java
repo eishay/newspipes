@@ -8,13 +8,9 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.Timer;
+
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
@@ -32,13 +28,18 @@ public class Newspipes implements EntryPoint
    */
   private final NewsPipesServiceAsync newsPipesService = GWT.create(NewsPipesService.class);
 
+  private String textToServer = null;
+
+  final VerticalPanel mainPanel = new VerticalPanel();
+  final Button sendButton = new Button("Send");
+  final TextBox nameField = new TextBox();
+
   /**
    * This is the entry point method.
    */
   public void onModuleLoad()
   {
-    final Button sendButton = new Button("Send");
-    final TextBox nameField = new TextBox();
+    RootPanel.get("mainPanel").add(mainPanel);
     nameField.setText("scala");
 
     // We can add style names to widgets
@@ -54,34 +55,34 @@ public class Newspipes implements EntryPoint
     nameField.selectAll();
 
     // Create the popup dialog box
-    final DialogBox dialogBox = new DialogBox();
-    dialogBox.setText("Remote Procedure Call");
-    dialogBox.setAnimationEnabled(true);
-    final Button closeButton = new Button("Close");
-    // We can set the id of a widget by accessing its Element
-    closeButton.getElement().setId("closeButton");
-    final Label textToServerLabel = new Label();
-    final HTML serverResponseLabel = new HTML();
-    VerticalPanel dialogVPanel = new VerticalPanel();
-    dialogVPanel.addStyleName("dialogVPanel");
-    dialogVPanel.add(new HTML("<b>Sending name to the server:</b>"));
-    dialogVPanel.add(textToServerLabel);
-    dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
-    dialogVPanel.add(serverResponseLabel);
-    dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
-    dialogVPanel.add(closeButton);
-    dialogBox.setWidget(dialogVPanel);
+//    final DialogBox dialogBox = new DialogBox();
+//    dialogBox.setText("Remote Procedure Call");
+//    dialogBox.setAnimationEnabled(true);
+//    final Button closeButton = new Button("Close");
+//    // We can set the id of a widget by accessing its Element
+//    closeButton.getElement().setId("closeButton");
+//    final Label textToServerLabel = new Label();
+//    final HTML serverResponseLabel = new HTML();
+//    VerticalPanel dialogVPanel = new VerticalPanel();
+//    dialogVPanel.addStyleName("dialogVPanel");
+//    dialogVPanel.add(new HTML("<b>Sending name to the server:</b>"));
+//    dialogVPanel.add(textToServerLabel);
+//    dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
+//    dialogVPanel.add(serverResponseLabel);
+//    dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
+//    dialogVPanel.add(closeButton);
+//    dialogBox.setWidget(dialogVPanel);
 
-    // Add a handler to close the DialogBox
-    closeButton.addClickHandler(new ClickHandler()
-    {
-      public void onClick(ClickEvent event)
-      {
-        dialogBox.hide();
-        sendButton.setEnabled(true);
-        sendButton.setFocus(true);
-      }
-    });
+//    // Add a handler to close the DialogBox
+//    closeButton.addClickHandler(new ClickHandler()
+//    {
+//      public void onClick(ClickEvent event)
+//      {
+//        dialogBox.hide();
+//        sendButton.setEnabled(true);
+//        sendButton.setFocus(true);
+//      }
+//    });
 
     // Create a handler for the sendButton and nameField
     class MyHandler implements ClickHandler, KeyUpHandler
@@ -91,7 +92,7 @@ public class Newspipes implements EntryPoint
        */
       public void onClick(ClickEvent event)
       {
-        sendNameToServer();
+        getContentAndExecute();
       }
 
       /**
@@ -101,40 +102,16 @@ public class Newspipes implements EntryPoint
       {
         if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER)
         {
-          sendNameToServer();
+          getContentAndExecute();
         }
       }
 
-      /**
-       * Send the name from the nameField to the server and wait for a response.
-       */
-      private void sendNameToServer()
+      private void getContentAndExecute()
       {
-        sendButton.setEnabled(false);
-        String textToServer = nameField.getText();
-        textToServerLabel.setText(textToServer);
-        serverResponseLabel.setText("");
-        newsPipesService.search(textToServer, new AsyncCallback<String>()
-        {
-          public void onFailure(Throwable caught)
-          {
-            // Show the RPC error message to the user
-            dialogBox.setText("Remote Procedure Call - Failure");
-            serverResponseLabel.addStyleName("serverResponseLabelError");
-            serverResponseLabel.setHTML(SERVER_ERROR);
-            dialogBox.center();
-            closeButton.setFocus(true);
-          }
-
-          public void onSuccess(String result)
-          {
-            dialogBox.setText("Remote Procedure Call");
-            serverResponseLabel.removeStyleName("serverResponseLabelError");
-            serverResponseLabel.setHTML(result);
-            dialogBox.center();
-            closeButton.setFocus(true);
-          }
-        });
+        String tmp = nameField.getText();
+        if(null == tmp || tmp.trim().length() == 0) return;
+        textToServer = tmp.trim();
+        sendNameToServer();
       }
     }
 
@@ -142,5 +119,44 @@ public class Newspipes implements EntryPoint
     MyHandler handler = new MyHandler();
     sendButton.addClickHandler(handler);
     nameField.addKeyUpHandler(handler);
+
+    Timer timer = new Timer() {
+      public void run() {
+        if(textToServer == null) return;
+        sendNameToServer();
+      }
+    };
+    timer.scheduleRepeating(10000);
   }
+
+  /**
+   * Send the name from the nameField to the server and wait for a response.
+   */
+  private void sendNameToServer()
+  {
+    sendButton.setEnabled(false);
+    newsPipesService.search(textToServer, new AsyncCallback<Article>()
+    {
+      public void onFailure(Throwable caught)
+      {
+        sendButton.setEnabled(true);
+        sendButton.setFocus(true);
+      }
+
+      public void onSuccess(Article article)
+      {
+        addArticleToPanel(article);
+        sendButton.setEnabled(true);
+        sendButton.setFocus(true);
+      }
+    });
+  }
+
+  private void addArticleToPanel(Article article) {
+    FlowPanel articleWidget = new FlowPanel();
+    articleWidget.add(new Label("[" + article.getCount() + "]"));
+    articleWidget.add(new HTML("<a href=\"" + article.getUrl() + "\">" + article.getUrl() + "</a>"));
+    mainPanel.add(articleWidget);
+  }
+
 }

@@ -7,5 +7,5 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface NewsPipesServiceAsync
 {
-  void search(String input, AsyncCallback<String> callback);
+  void search(String input, AsyncCallback<Article> callback);
 }

@@ -9,5 +9,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("search")
 public interface NewsPipesService extends RemoteService
 {
-  String search(String name);
+  Article search(String name);
 }
