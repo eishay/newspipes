@@ -6,6 +6,13 @@ import google.gwt.user.server.rpc.RemoteServiceServlet
 
 class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService
 {
+  val idIndex = 0
+
+  def nextId() : Int = {
+    idIndex += 1
+    idIndex
+  }
+
   def search(input: String): Article = {
     val serverInfo = getServletContext().getServerInfo()
     //getThreadLocalRequest().getHeader("User-Agent");
@@ -15,6 +22,6 @@ class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService
 //    sb.append("For keyword [" + input + "] we found the following URLs:<br>")
 //    urls foreach (url => sb.append("<a href=\"" + url + "\">" + url + "</a><br/>"))
 //    sb.toString()
-    new Article(urls(0), 1)
+    new Article(nextId, urls(0), 1)
   }
 }
