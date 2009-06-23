@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<datastore-indexes autoGenerate="false">
+    <!--datastore-index kind="Employee" ancestor="false">
+        <property name="lastName" direction="asc" />
+        <property name="hireDate" direction="desc" />
+    </datastore-index-->
+
+    <!--datastore-index kind="query" ancestor="false">
+        <property name="dueDate" direction="asc" />
+    </datastore-index-->
+</datastore-indexes>

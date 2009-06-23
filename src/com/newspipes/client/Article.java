@@ -2,16 +2,27 @@ package com.newspipes.client;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.Persistent;
+
+@PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Article implements IsSerializable {
+
+  @Persistent
+  private String _title;
+
+  @Persistent
   private String _url;
-  private int _count;
-  private int _id;
+
+  @Persistent
+  private int _count = 1;
 
   public Article() {}
 
-  public Article(int id, String url, int count) {
+  public Article(String url, String title) {
     _url = url;
-    _count = count;
+    _title = title;
   }
 
   public int getCount() {
@@ -22,7 +33,7 @@ public class Article implements IsSerializable {
     return _url;
   }
 
-  public int getId() {
-    return _id;
+  public String getTitle() {
+    return _title;
   }
 }

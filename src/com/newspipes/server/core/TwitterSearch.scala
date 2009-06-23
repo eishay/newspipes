@@ -5,8 +5,9 @@ import java.net.URL
 import scala.xml._
 
 class TwitterSearch {
+  val urlFetchService = URLFetchServiceFactory.getURLFetchService
+
   def search(query: String) : Array[String] = {
-    val urlFetchService = URLFetchServiceFactory.getURLFetchService
     val response = urlFetchService.fetch(new URL("http://search.twitter.com/search.atom?q=" + query + "&rpp=100"))
     val stringValue = new String(response.getContent)
     val xml = XML.loadString(stringValue)
@@ -21,7 +22,7 @@ class TwitterSearch {
   
   def extractUrl(element: Node) : Option[String] = {
     val str = element \ "content" map (a => a.child) flatMap (a => a) mkString("")
-    println(str)
+    //println(str)
     extractUrlFromContent(str)
   }
   
@@ -34,7 +35,7 @@ class TwitterSearch {
       val matcher = urlPattern.matcher(str)
       matcher.find() match {
         case true  => {
-          println("matching " + str)
+          //println("matching " + str)
           val url = matcher.group(1)
           urlTwitterPattern.matcher(url).find() match {
             case true => None
@@ -42,7 +43,7 @@ class TwitterSearch {
           }
         }
         case false => {
-          println ("not matching " + str)
+          //println ("not matching " + str)
           None
         }
       }

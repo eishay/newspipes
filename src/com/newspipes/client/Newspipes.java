@@ -97,7 +97,8 @@ public class Newspipes implements EntryPoint
         sendNameToServer();
       }
     };
-    timer.scheduleRepeating(10000);
+    //disable timer
+    //timer.scheduleRepeating(10000);
   }
 
   /**

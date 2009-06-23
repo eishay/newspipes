@@ -120,7 +120,7 @@
             destdir="${dstdir}"
             classpathref="project.classpath"
             debug="on" />
-    <taskdef
+    <!--taskdef
        name="datanucleusenhancer"
        classpathref="tools.class.path"
        classname="org.datanucleus.enhancer.tools.EnhancerTask" />
@@ -128,7 +128,7 @@
        classpathref="tools.class.path"
        failonerror="true">
       <fileset dir="war/WEB-INF/classes" includes="**/*.class" />
-    </datanucleusenhancer>
+    </datanucleusenhancer-->
   </target>
 
   <target name="hosted" depends="gwtc" description="Run hosted mode">
