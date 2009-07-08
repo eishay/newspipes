@@ -60,7 +60,7 @@
   </target>
 
   <target name="clean" depends="copyjars" description="cleans up the classes">
-  	<delete dir="war/WEB-INF/classes" />
+  	<delete dir="${dstdir}" />
   </target>
 
   <target name="test" depends="compile" description="run teh tests">
@@ -102,6 +102,7 @@
       <src path="${srcdir}"/>
       <classpath refid="project.classpath"/>
     </scalac>
+
     <javac srcdir="${srcdir}"
             destdir="${dstdir}"
             classpathref="project.classpath"
@@ -110,6 +111,18 @@
             nowarn="true"
             debuglevel="lines,vars,source"
             debug="on" />
+
+    <taskdef
+       name="datanucleusenhancer"
+       classpathref="tools.class.path"
+       classname="org.datanucleus.enhancer.tools.EnhancerTask" />
+    <datanucleusenhancer
+       classpathref="tools.class.path"
+       failonerror="true">
+      <fileset dir="${dstdir}" includes="**/*.class" />
+    </datanucleusenhancer>
+
+
     <scalac
       destdir="${dstdir}"
       scalacdebugging="yes">
@@ -120,18 +133,14 @@
             destdir="${dstdir}"
             classpathref="project.classpath"
             debug="on" />
-    <!--taskdef
-       name="datanucleusenhancer"
-       classpathref="tools.class.path"
-       classname="org.datanucleus.enhancer.tools.EnhancerTask" />
-    <datanucleusenhancer
-       classpathref="tools.class.path"
-       failonerror="true">
-      <fileset dir="war/WEB-INF/classes" includes="**/*.class" />
-    </datanucleusenhancer-->
   </target>
 
-  <target name="hosted" depends="gwtc" description="Run hosted mode">
+  <target name="datanucleusenhance" depends="compile"
+      description="Performs JDO enhancement on compiled data classes.">
+    <enhance_war war="war" />
+  </target>
+
+  <target name="hosted" depends="gwtc, datanucleusenhance" description="Run hosted mode">
     <java failonerror="true" fork="true" classname="com.google.gwt.dev.HostedMode">
       <classpath>
         <pathelement location="src"/>

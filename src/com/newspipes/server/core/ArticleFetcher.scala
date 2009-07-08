@@ -8,24 +8,23 @@ import java.util.regex.Pattern
 
 object ArticleFetcher {
   val urlFetchService = URLFetchServiceFactory.getURLFetchService
-  val titlePattern = Pattern.compile("""<title.*>(.*?)(</title>""", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE)
+  val titlePattern = Pattern.compile("""<title.*>(.*?)</title>""", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE)
   val headerPattern = Pattern.compile("""<h.*>(.*?)</h?>""", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE)
 
-  def fetch(url: String) : Article = {
+  def fetchTitle(url: String) = {
     val response = urlFetchService.fetch(new URL(url))
     //extract Content-Type / charset from header
     val content = new String(response.getContent)
     var matcher = titlePattern.matcher(content)
-    val title = matcher.matches match {
+    matcher.matches match {
       case true => matcher.group(1)
       case false => {
         matcher = headerPattern.matcher(content)
-        matcher.matches match {
+        matcher.find() match {
           case true => matcher.group(1)
           case false => url
         }
       }
     }
-    new Article(url, title)
   }
 }

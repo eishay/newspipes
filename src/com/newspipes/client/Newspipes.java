@@ -40,14 +40,16 @@ public class Newspipes implements EntryPoint
   public void onModuleLoad()
   {
     RootPanel.get("mainPanel").add(mainPanel);
-    nameField.setText("scala");
+    // http://www.linkedin.com/rss/nus?key=swWAPb7ehmtUSIbXVS0B4DdwJ4MyuH87ubX1-1QUv1Sc4CJ73eJHJ9FkoQmUTJIT
+    //nameField.setText("http://www.linkedin.com/rss/nus?key=...");
+    nameField.setText("Scala");
 
     // We can add style names to widgets
     sendButton.addStyleName("sendButton");
 
     // Add the nameField and sendButton to the RootPanel
     // Use RootPanel.get() to get the entire body element
-    RootPanel.get("nameFieldContainer").add(nameField);
+    RootPanel.get("linkedinRssFieldContainer").add(nameField);
     RootPanel.get("sendButtonContainer").add(sendButton);
 
     // Focus the cursor on the name field when the app loads
@@ -97,8 +99,7 @@ public class Newspipes implements EntryPoint
         sendNameToServer();
       }
     };
-    //disable timer
-    //timer.scheduleRepeating(10000);
+    timer.scheduleRepeating(10000);
   }
 
   /**
@@ -126,9 +127,7 @@ public class Newspipes implements EntryPoint
 
   private void addArticleToPanel(Article article) {
     FlowPanel articleWidget = new FlowPanel();
-    articleWidget.add(new Label("[" + article.getCount() + "]"));
-    articleWidget.add(new HTML("<a href=\"" + article.getUrl() + "\">" + article.getUrl() + "</a>"));
+    articleWidget.add(new HTML("<a href=\"" + article.getUrl() + "\">[" + article.getCount() +  "] " + article.getTitle() + "</a>"));
     mainPanel.add(articleWidget);
   }
-
 }

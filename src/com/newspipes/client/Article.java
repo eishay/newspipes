@@ -2,12 +2,14 @@ package com.newspipes.client;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.*;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Article implements IsSerializable {
+  @PrimaryKey
+  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+  @Extension(vendorName="datanucleus", key="gae.encoded-pk", value="true")
+  private String _key;
 
   @Persistent
   private String _title;
@@ -20,12 +22,18 @@ public class Article implements IsSerializable {
 
   public Article() {}
 
-  public Article(String url, String title) {
+  public Article(String key, String url, String title) {
     _url = url;
     _title = title;
+    _key = key;
   }
 
   public int getCount() {
+    return _count;
+  }
+
+  public int incrementCount() {
+    _count++;
     return _count;
   }
 

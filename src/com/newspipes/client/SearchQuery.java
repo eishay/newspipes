@@ -8,13 +8,13 @@ import javax.jdo.annotations.Persistent;
 import java.util.List;
 import java.util.ArrayList;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+//@PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SearchQuery implements IsSerializable{
 
-  @Persistent
+  //@Persistent
   private String _query;
 
-  @Persistent
+  //@Persistent
   private List<Article> _articles = new ArrayList<Article>();
 
   public SearchQuery(){}
