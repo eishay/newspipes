@@ -16,7 +16,7 @@ object ArticleFetcher {
     //extract Content-Type / charset from header
     val content = new String(response.getContent)
     var matcher = titlePattern.matcher(content)
-    matcher.matches match {
+    matcher.find match {
       case true => matcher.group(1)
       case false => {
         matcher = headerPattern.matcher(content)

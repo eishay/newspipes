@@ -42,7 +42,7 @@ public class Newspipes implements EntryPoint
     RootPanel.get("mainPanel").add(mainPanel);
     // http://www.linkedin.com/rss/nus?key=swWAPb7ehmtUSIbXVS0B4DdwJ4MyuH87ubX1-1QUv1Sc4CJ73eJHJ9FkoQmUTJIT
     //nameField.setText("http://www.linkedin.com/rss/nus?key=...");
-    nameField.setText("Scala");
+    nameField.setText("app engine");
 
     // We can add style names to widgets
     sendButton.addStyleName("sendButton");
@@ -99,7 +99,7 @@ public class Newspipes implements EntryPoint
         sendNameToServer();
       }
     };
-    timer.scheduleRepeating(10000);
+    timer.scheduleRepeating(40000);
   }
 
   /**
@@ -127,7 +127,8 @@ public class Newspipes implements EntryPoint
 
   private void addArticleToPanel(Article article) {
     FlowPanel articleWidget = new FlowPanel();
-    articleWidget.add(new HTML("<a href=\"" + article.getUrl() + "\">[" + article.getCount() +  "] " + article.getTitle() + "</a>"));
+    String times = article.getCount() > 1 ? "times" : "time";
+    articleWidget.add(new HTML("Viewd " + article.getCount() + " " + times + " : <a href=\"" + article.getUrl() + "\">" + article.getTitle() + "</a>"));
     mainPanel.add(articleWidget);
   }
 }
