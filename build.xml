@@ -112,17 +112,6 @@
             debuglevel="lines,vars,source"
             debug="on" />
 
-    <taskdef
-       name="datanucleusenhancer"
-       classpathref="tools.class.path"
-       classname="org.datanucleus.enhancer.tools.EnhancerTask" />
-    <datanucleusenhancer
-       classpathref="tools.class.path"
-       failonerror="true">
-      <fileset dir="${dstdir}" includes="**/*.class" />
-    </datanucleusenhancer>
-
-
     <scalac
       destdir="${dstdir}"
       scalacdebugging="yes">

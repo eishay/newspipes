@@ -9,6 +9,7 @@ import java.util.logging.Logger
 import java.util.Random
 import javax.jdo.{JDOObjectNotFoundException, PersistenceManager, JDOEntityManager}
 import org.datanucleus.exceptions.NucleusObjectNotFoundException
+
 object NewsPipesServiceImpl{
   val logger = Logger.getLogger(classOf[NewsPipesServiceImpl].getName())
   val ds = DatastoreServiceFactory.getDatastoreService()
@@ -25,17 +26,42 @@ class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService{
     val twitter = new TwitterSearch()
     val urls = twitter.search(keyword)
 
-    val url = urls(random.nextInt(Math.min(urls.size, 3)))
-    val title = ArticleFetcher.fetchTitle(url)
-    val key = KeyFactory.createKey(classOf[Article].getSimpleName, url)
+    var key = KeyFactory.createKey(classOf[SearchKeyword].getSimpleName, keyword)
+    var searchKeyword = query(PME.pmfInstance.getPersistenceManager()) { pm =>
+      pm.setDetachAllOnCommit(true)
+      val existingKeyword: SearchKeyword = pm.getObjectById(classOf[SearchKeyword], keyword)
+      existingKeyword.count += 1
+      existingKeyword
+    } match {
+      case None => null
+      case Some(value) => value
+    }
+    if(null == searchKeyword){
+      searchKeyword = new SearchKeyword
+      searchKeyword.key = KeyFactory.keyToString(key)
+      searchKeyword.value = keyword
+      execute(PME.pmfInstance.getPersistenceManager()) { pm =>
+        pm.makePersistent(searchKeyword)
+      }
+    }
+
+
+    val url = urls(random.nextInt(urls.size))
+    val (title, fullUrl) = ArticleFetcher.fetchTitle(url)
+    key = KeyFactory.createKey(classOf[Article].getSimpleName, fullUrl)
+
     var article = query(PME.pmfInstance.getPersistenceManager()) { pm =>
       pm.setDetachAllOnCommit(true)
-      val existingArticle: Article = pm.getObjectById(classOf[Article], url)
+      val existingArticle: Article = pm.getObjectById(classOf[Article], fullUrl)
       existingArticle.incrementCount()
       existingArticle
+    } match {
+      case None => null
+      case Some(value) => value
     }
+
     if(null == article){
-      article = new Article(KeyFactory.keyToString(key), url, title)
+      article = new Article(KeyFactory.keyToString(key), fullUrl, title)
       execute(PME.pmfInstance.getPersistenceManager()) { pm =>
         pm.makePersistent(article)
       }
@@ -53,14 +79,15 @@ class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService{
     }
   }
 
-  def query(pm: PersistenceManager)(block: PersistenceManager => Article): Article = {
+  def query[A](pm: PersistenceManager)(block: PersistenceManager => A): Option[A] = {
     try {
-      block(pm)
+      val value = block(pm)
+      Some(value)
     }
     catch {
       case e: JDOObjectNotFoundException => {
         println("object not found")
-        null
+        None
       }
       case any => {
         any.printStackTrace()
