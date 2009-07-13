@@ -10,6 +10,11 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Cookies;
+import com.google.gwt.user.client.Random;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -30,15 +35,25 @@ public class Newspipes implements EntryPoint
 
   private String textToServer = null;
 
-  final VerticalPanel mainPanel = new VerticalPanel();
-  final Button sendButton = new Button("Send");
-  final TextBox nameField = new TextBox();
+  final private VerticalPanel mainPanel = new VerticalPanel();
+  final private Button sendButton = new Button("Send");
+  final private TextBox nameField = new TextBox();
+
+  final private List existingArticleKeys = new ArrayList();
+  private String id = null;
 
   /**
    * This is the entry point method.
    */
   public void onModuleLoad()
   {
+    if(null == id){
+      id = Cookies.getCookie("SESSION_ID");
+      if(null == id) {
+        id = "SESSION_ID." + System.currentTimeMillis() + "." + Random.nextInt() + "." + Random.nextDouble();
+        Cookies.setCookie("SESSION_ID", id);
+      }
+    }
     RootPanel.get("mainPanel").add(mainPanel);
     // http://www.linkedin.com/rss/nus?key=swWAPb7ehmtUSIbXVS0B4DdwJ4MyuH87ubX1-1QUv1Sc4CJ73eJHJ9FkoQmUTJIT
     //nameField.setText("http://www.linkedin.com/rss/nus?key=...");
@@ -108,7 +123,7 @@ public class Newspipes implements EntryPoint
   private void sendNameToServer()
   {
     sendButton.setEnabled(false);
-    newsPipesService.search(textToServer, new AsyncCallback<Article>()
+    newsPipesService.search(id, textToServer, new AsyncCallback<Article>()
     {
       public void onFailure(Throwable caught)
       {
@@ -119,6 +134,7 @@ public class Newspipes implements EntryPoint
       public void onSuccess(Article article)
       {
         addArticleToPanel(article);
+        existingArticleKeys.add(article.getKey());
         sendButton.setEnabled(true);
         sendButton.setFocus(true);
       }
@@ -130,5 +146,6 @@ public class Newspipes implements EntryPoint
     String times = article.getCount() > 1 ? "times" : "time";
     articleWidget.add(new HTML("Viewd " + article.getCount() + " " + times + " : <a href=\"" + article.getUrl() + "\">" + article.getTitle() + "</a> at <a href=\"" + article.getUrl() + "\">" + article.getUrl() + "</a>"));
     mainPanel.add(articleWidget);
+
   }
 }

@@ -44,4 +44,9 @@ public class Article implements IsSerializable {
   public String getTitle() {
     return _title;
   }
+
+  public String getKey()
+  {
+    return _key;
+  }
 }

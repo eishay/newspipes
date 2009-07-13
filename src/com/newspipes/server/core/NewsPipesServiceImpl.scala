@@ -6,7 +6,7 @@ import google.appengine.api.datastore._
 import google.appengine.api.datastore.Query._
 import google.gwt.user.server.rpc.RemoteServiceServlet
 import java.util.logging.Logger
-import java.util.Random
+import java.util.{Random, List => JList}
 import javax.jdo.{JDOObjectNotFoundException, PersistenceManager, JDOEntityManager}
 import org.datanucleus.exceptions.NucleusObjectNotFoundException
 
@@ -19,8 +19,9 @@ object NewsPipesServiceImpl{
 class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService{
   import NewsPipesServiceImpl._
 
-  def search(keyword: String): Article = {
-    println("searching for: " + keyword)
+  def search(sessionID: String, keyword: String): Article = {
+    println("[" + sessionID + "] searching for: " + keyword)
+    val session = Session.getSession(sessionID)
 
     val serverInfo = getServletContext().getServerInfo()
     val twitter = new TwitterSearch()
@@ -37,9 +38,7 @@ class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService{
       case Some(value) => value
     }
     if(null == searchKeyword){
-      searchKeyword = new SearchKeyword
-      searchKeyword.key = KeyFactory.keyToString(key)
-      searchKeyword.value = keyword
+      searchKeyword = new SearchKeyword(KeyFactory.keyToString(key), keyword, Nil, Nil, 1)
       execute(PME.pmfInstance.getPersistenceManager()) { pm =>
         pm.makePersistent(searchKeyword)
       }
@@ -49,7 +48,8 @@ class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService{
     val url = urls(random.nextInt(urls.size))
     val (title, fullUrl) = ArticleFetcher.fetchTitle(url)
     key = KeyFactory.createKey(classOf[Article].getSimpleName, fullUrl)
-
+    val keyAsString = KeyFactory.keyToString(key)
+    
     var article = query(PME.pmfInstance.getPersistenceManager()) { pm =>
       pm.setDetachAllOnCommit(true)
       val existingArticle: Article = pm.getObjectById(classOf[Article], fullUrl)
@@ -61,12 +61,15 @@ class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService{
     }
 
     if(null == article){
-      article = new Article(KeyFactory.keyToString(key), fullUrl, title)
+      article = new Article(keyAsString, fullUrl, title)
       execute(PME.pmfInstance.getPersistenceManager()) { pm =>
         pm.makePersistent(article)
       }
     }
     else println("article found!")
+    println("1. session = " + session.getValue)
+    session.updateValue(article.getUrl)
+    println("2. session = " + session.getValue)
     article
   }
 
@@ -82,6 +85,7 @@ class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService{
   def query[A](pm: PersistenceManager)(block: PersistenceManager => A): Option[A] = {
     try {
       val value = block(pm)
+      println("found " + value)
       Some(value)
     }
     catch {
