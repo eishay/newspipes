@@ -6,9 +6,8 @@ import google.appengine.api.datastore._
 import google.appengine.api.datastore.Query._
 import google.gwt.user.server.rpc.RemoteServiceServlet
 import java.util.logging.Logger
-import java.util.{Random, List => JList}
+import java.util.{ArrayList, Random, List => JList}
 import javax.jdo.{JDOObjectNotFoundException, PersistenceManager, JDOEntityManager}
-import org.datanucleus.exceptions.NucleusObjectNotFoundException
 
 object NewsPipesServiceImpl{
   val logger = Logger.getLogger(classOf[NewsPipesServiceImpl].getName())
@@ -19,9 +18,10 @@ object NewsPipesServiceImpl{
 class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService{
   import NewsPipesServiceImpl._
 
-  def search(sessionID: String, keyword: String): Article = {
-    println("[" + sessionID + "] searching for: " + keyword)
-    val session = Session.getSession(sessionID)
+  def search(clientID: String, keyword: String): Article = {
+    println("[" + clientID + "] searching for: " + keyword)
+    val session = getThreadLocalRequest.getSession(true)
+    println("session id = [" + session.getId + "]")
 
     val serverInfo = getServletContext().getServerInfo()
     val twitter = new TwitterSearch()
@@ -38,7 +38,7 @@ class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService{
       case Some(value) => value
     }
     if(null == searchKeyword){
-      searchKeyword = new SearchKeyword(KeyFactory.keyToString(key), keyword, Nil, Nil, 1)
+      searchKeyword = new SearchKeyword(KeyFactory.keyToString(key), keyword, new ArrayList, new ArrayList, 1)
       execute(PME.pmfInstance.getPersistenceManager()) { pm =>
         pm.makePersistent(searchKeyword)
       }
@@ -47,6 +47,7 @@ class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService{
 
     val url = urls(random.nextInt(urls.size))
     val (title, fullUrl) = ArticleFetcher.fetchTitle(url)
+    println("found title = " + title + " and url = " + fullUrl + " from url " + url)
     key = KeyFactory.createKey(classOf[Article].getSimpleName, fullUrl)
     val keyAsString = KeyFactory.keyToString(key)
     
@@ -67,9 +68,8 @@ class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService{
       }
     }
     else println("article found!")
-    println("1. session = " + session.getValue)
-    session.updateValue(article.getUrl)
-    println("2. session = " + session.getValue)
+    println("article in session = " + session.getValue("articles"))
+    session.putValue("articles", article)
     article
   }
 

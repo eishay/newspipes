@@ -8,7 +8,7 @@ class TwitterSearch {
   val urlFetchService = URLFetchServiceFactory.getURLFetchService
 
   def search(query: String) : Array[String] = {
-    val response = urlFetchService.fetch(new URL("http://search.twitter.com/search.atom?q=" + query + "&rpp=100"))
+    val response = urlFetchService.fetch(new URL("http://search.twitter.com/search.atom?q=" + query + "&filter:links&rpp=100"))
     val stringValue = new String(response.getContent)
     val xml = XML.loadString(stringValue)
     val urls = extractUrls(xml \ "entry")
