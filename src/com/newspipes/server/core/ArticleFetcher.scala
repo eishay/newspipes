@@ -11,7 +11,7 @@ object ArticleFetcher {
   val titlePattern = Pattern.compile("""<title.*>(.*?)</title>""", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE)
   val headerPattern = Pattern.compile("""<h.*>(.*?)</h?>""", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE)
 
-  def fetchTitle(url: String): (String, String) = {
+  def fetchTitle(url: String): (Option[String], String) = {
     val fullUrl: String = getFullUrl(url)
     try {
       val response = urlFetchService.fetch(new URL(fullUrl))
@@ -20,12 +20,12 @@ object ArticleFetcher {
       val content = new String(response.getContent)
       var matcher = titlePattern.matcher(content)
       matcher.find match {
-        case true => (matcher.group(1), fullUrl)
+        case true => (Some(matcher.group(1)), fullUrl)
         case false => {
           matcher = headerPattern.matcher(content)
           matcher.find() match {
-            case true => (matcher.group(1), fullUrl)
-            case false => (fullUrl, fullUrl)
+            case true => (Some(matcher.group(1)), fullUrl)
+            case false => (None, fullUrl)
           }
         }
       }
@@ -33,12 +33,12 @@ object ArticleFetcher {
     catch{
       case e => {
         e.printStackTrace
-        (fullUrl, fullUrl)
+        (None, fullUrl)
       }
     }
   }
 
-  def getFullUrl(url: String) = {
+  private def getFullUrl(url: String) = {
     try {
       val byteArray = urlFetchService.fetch(new URL("""http://www.permanize.org/resolve/""" + url)).getContent
       new String(byteArray)

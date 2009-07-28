@@ -24,35 +24,48 @@ class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService{
     println("session id = [" + session.getId + "]")
 
     val serverInfo = getServletContext().getServerInfo()
-    val urls = TwitterSearch.search(keyword)
 
     val searchKeyword = getKeyword(keyword)
+    val urls = TwitterSearch.search(searchKeyword)
 
     val url = urls(random.nextInt(urls.size))
     val (title, fullUrl) = ArticleFetcher.fetchTitle(url)
     println("found title = " + title + " and url = " + fullUrl + " from url " + url)
+    val article = getArticle()
+    println("article in session = " + session.getValue("articles"))
+    session.putValue("articles", article)
+    article
+  }
+
+  private def getArticle() = {
     val key = KeyFactory.createKey(classOf[Article].getSimpleName, fullUrl)
     val keyAsString = KeyFactory.keyToString(key)
-    
-    var article = query(PME.pmfInstance.getPersistenceManager()) { pm =>
+
+    query(PME.pmfInstance.getPersistenceManager()) { pm =>
       val existingArticle: Article = pm.getObjectById(classOf[Article], fullUrl)
       existingArticle.incrementCount()
       existingArticle
     } match {
-      case None => null
-      case Some(value) => value
-    }
-
-    if(null == article){
-      article = new Article(keyAsString, fullUrl, title)
-      execute(PME.pmfInstance.getPersistenceManager()) { pm =>
-        pm.makePersistent(article)
+      case None => {
+        val normalizedTitle = title match {
+          case None => null
+          case Some(text) => trim(text)
+        }
+        val article = new Article(keyAsString, trim(fullUrl), normalizedTitle)
+        execute(PME.pmfInstance.getPersistenceManager()) { pm =>
+          pm.makePersistent(article)
+        }
+        article
+      }
+      case Some(value) => {
+        println("article found!")
+        value
       }
     }
-    else println("article found!")
-    println("article in session = " + session.getValue("articles"))
-    session.putValue("articles", article)
-    article
+  }
+
+  private def trim(text: String) = {
+    if(text.length > 500) (text.substring(0, 497) + "...") else text
   }
 
   /**

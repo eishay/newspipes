@@ -5,4 +5,5 @@ import google.appengine.api.memcache.{MemcacheService, Expiration, MemcacheServi
 import java.io.Serializable
 
 class Session(val id: String) extends Serializable{
+
 }
