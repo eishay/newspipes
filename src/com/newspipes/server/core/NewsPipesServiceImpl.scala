@@ -24,35 +24,17 @@ class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService{
     println("session id = [" + session.getId + "]")
 
     val serverInfo = getServletContext().getServerInfo()
-    val twitter = new TwitterSearch()
-    val urls = twitter.search(keyword)
+    val urls = TwitterSearch.search(keyword)
 
-    var key = KeyFactory.createKey(classOf[SearchKeyword].getSimpleName, keyword)
-    var searchKeyword = query(PME.pmfInstance.getPersistenceManager()) { pm =>
-      pm.setDetachAllOnCommit(true)
-      val existingKeyword: SearchKeyword = pm.getObjectById(classOf[SearchKeyword], keyword)
-      existingKeyword.count += 1
-      existingKeyword
-    } match {
-      case None => null
-      case Some(value) => value
-    }
-    if(null == searchKeyword){
-      searchKeyword = new SearchKeyword(KeyFactory.keyToString(key), keyword, new ArrayList, new ArrayList, 1)
-      execute(PME.pmfInstance.getPersistenceManager()) { pm =>
-        pm.makePersistent(searchKeyword)
-      }
-    }
-
+    val searchKeyword = getKeyword(keyword)
 
     val url = urls(random.nextInt(urls.size))
     val (title, fullUrl) = ArticleFetcher.fetchTitle(url)
     println("found title = " + title + " and url = " + fullUrl + " from url " + url)
-    key = KeyFactory.createKey(classOf[Article].getSimpleName, fullUrl)
+    val key = KeyFactory.createKey(classOf[Article].getSimpleName, fullUrl)
     val keyAsString = KeyFactory.keyToString(key)
     
     var article = query(PME.pmfInstance.getPersistenceManager()) { pm =>
-      pm.setDetachAllOnCommit(true)
       val existingArticle: Article = pm.getObjectById(classOf[Article], fullUrl)
       existingArticle.incrementCount()
       existingArticle
@@ -73,6 +55,27 @@ class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService{
     article
   }
 
+  /**
+   * intern a keyword from db
+   */
+  def getKeyword(keyword: String) = {
+    val key = KeyFactory.createKey(classOf[SearchKeyword].getSimpleName, keyword)
+    query(PME.pmfInstance.getPersistenceManager()) { pm =>
+      val existingKeyword: SearchKeyword = pm.getObjectById(classOf[SearchKeyword], keyword)
+      existingKeyword.count += 1
+      existingKeyword
+    } match {
+      case None => {
+        val searchKeyword = new SearchKeyword(KeyFactory.keyToString(key), keyword, new ArrayList, new ArrayList, 1)
+        execute(PME.pmfInstance.getPersistenceManager()) { pm =>
+          pm.makePersistent(searchKeyword)
+        }
+        searchKeyword
+      }
+      case Some(value) => value
+    }
+  }
+
   def execute(pm: PersistenceManager)(block: PersistenceManager => Unit): Unit = {
     try {
       block(pm)
@@ -84,6 +87,7 @@ class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService{
 
   def query[A](pm: PersistenceManager)(block: PersistenceManager => A): Option[A] = {
     try {
+      pm.setDetachAllOnCommit(true)
       val value = block(pm)
       println("found " + value)
       Some(value)

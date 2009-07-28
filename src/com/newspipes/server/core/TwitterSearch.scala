@@ -4,7 +4,7 @@ import com.google.appengine.api.urlfetch._
 import java.net.URL
 import scala.xml._
 
-class TwitterSearch {
+object TwitterSearch {
   val urlFetchService = URLFetchServiceFactory.getURLFetchService
 
   def search(query: String) : Array[String] = {
