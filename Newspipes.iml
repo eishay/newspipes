@@ -39,6 +39,11 @@
           </containerElement>
         </packaging>
       </configuration>
+      <facet type="google-app-engine" name="Google App Engine">
+        <configuration>
+          <sdk-home-path>$MODULE_DIR$/../../../sw/appengine-java-sdk</sdk-home-path>
+        </configuration>
+      </facet>
     </facet>
     <facet type="javaeeApplication" name="javaEEApplication">
       <configuration>

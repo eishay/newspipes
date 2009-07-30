@@ -29,15 +29,15 @@ class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService{
     val urls = TwitterSearch.search(searchKeyword)
 
     val url = urls(random.nextInt(urls.size))
-    val (title, fullUrl) = ArticleFetcher.fetchTitle(url)
-    println("found title = " + title + " and url = " + fullUrl + " from url " + url)
-    val article = getArticle()
+    val article = getArticle(url)
     println("article in session = " + session.getValue("articles"))
     session.putValue("articles", article)
     article
   }
 
-  private def getArticle() = {
+  private def getArticle(url: String) = {
+    var (title, fullUrl) = ArticleFetcher.fetchTitle(url)
+    println("found title = " + title + " and url = " + fullUrl)
     val key = KeyFactory.createKey(classOf[Article].getSimpleName, fullUrl)
     val keyAsString = KeyFactory.keyToString(key)
 
