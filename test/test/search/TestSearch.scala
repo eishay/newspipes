@@ -7,21 +7,18 @@ import com.newspipes.server.core.TwitterSearch
 class TestSearch extends TestCase with Assert {
 
   def testNoLink : Unit = {
-    val search = new TwitterSearch
-    assertEq(None, search.extractUrlFromContent("nothing here"))
-    assertEq(None, search.extractUrlFromContent(""))
+    assertEq(None, TwitterSearch.extractUrlFromContent("nothing here"))
+    assertEq(None, TwitterSearch.extractUrlFromContent(""))
   }
 
   def testWithLink : Unit = {
-    val search = new TwitterSearch
-    var result = search.extractUrlFromContent("""something a href=&quot;http://www.linkedin.com&quot; end""")
+    var result = TwitterSearch.extractUrlFromContent("""something a href=&quot;http://www.linkedin.com&quot; end""")
     assertEquals("got " + result.toString, Some("http://www.linkedin.com"), result)
-    result = search.extractUrlFromContent("""something a href=&quot;http://www.linkedin.com&quot; a href=&quot;http://www.linkedin2.com&quot; end""")
+    result = TwitterSearch.extractUrlFromContent("""something a href=&quot;http://www.linkedin.com&quot; a href=&quot;http://www.linkedin2.com&quot; end""")
     assertEquals("got " + result.toString, Some("http://www.linkedin.com"), result)
   }
 
   def testXmlWithLink : Unit = {
-    val search = new TwitterSearch
     val link = "http://www.site.com/something&amp;param=aaa"
     val xml = <feed xmlns:google="http://base.google.com/ns/1.0" xml:lang="en-US" xmlns:openSearch="http://a9.com/-/spec/opensearch/1.1/" xmlns="http://www.w3.org/2005/Atom" xmlns:twitter="http://api.twitter.com/">
                 <id>tag:search.twitter.com,2005:search/scala</id>
@@ -67,9 +64,9 @@ class TestSearch extends TestCase with Assert {
                 </feed>;
     val elements = xml \ "entry"
     assertEquals(2, elements.size)
-    assertEquals(Some(link), search.extractUrl(elements(0)))
-    assertEquals(None, search.extractUrl(elements(1)))
-    var result = search.extractUrls(elements)
+    assertEquals(Some(link), TwitterSearch.extractUrl(elements(0)))
+    assertEquals(None, TwitterSearch.extractUrl(elements(1)))
+    var result = TwitterSearch.extractUrls(elements)
     assertEquals(1, result.size)
     assertEquals(link, result(0))
   }

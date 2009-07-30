@@ -2,7 +2,7 @@ package com.newspipes.server.core
 
 import client.Article
 import google.appengine.api.datastore.KeyFactory
-import java.util.{List => JList}
+import java.util.{ArrayList, List => JList}
 import javax.jdo.annotations.{Extension, Persistent, IdGeneratorStrategy, PrimaryKey, PersistenceCapable, IdentityType}
 import scala.collection.jcl.Conversions._
 import ServiceUtils._
@@ -14,16 +14,30 @@ class SearchKeyword(
   @Extension{val vendorName="datanucleus", val key="gae.encoded-pk", val value="true"}
   var key: String,
   @Persistent var value: String,
-  @Persistent var redirectedUrl: JList[RedirectedUrl],
+  @Persistent var redirectedUrls: JList[RedirectedUrl],
   @Persistent var fetchedArticles: JList[String],
   @Persistent var count: Int) {
 
   /**
    * Adding URLs to the list of raw urls
    */
-  def addUrls(urls: Seq[String]) = for(url <- urls) if(!hasUrl(url)) redirectedUrl.add(getRedirectUrl(url))
+  def addUrls(urls: Seq[String]) = urls match {
+    case urls if(null == urls || urls.isEmpty) =>
+    case _ => for(url <- urls) if(!hasUrl(url)) internRedirectedUrls.add(getRedirectUrl(url))
+  }
 
-  private def hasUrl(url: String): Boolean = redirectedUrl exists (a => url == a.rawUrl || url == a.resolvedUrl)
+  def internRedirectedUrls = redirectedUrls match {
+    case null => {
+      redirectedUrls = new ArrayList
+      redirectedUrls
+    }
+    case _ => redirectedUrls
+  }
+
+  private def hasUrl(url: String): Boolean = redirectedUrl match {
+    case null => false
+    case urls => urls exists (a => url == a.rawUrl || url == a.resolvedUrl)
+  }
 
   def getRedirectUrl(url: String) = {
     query(PME.pmfInstance.getPersistenceManager()) { pm =>
