@@ -29,11 +29,9 @@ class NewsPipesServiceImpl extends RemoteServiceServlet with NewsPipesService{
     searchKeyword.addUrls(urls)
     val url = urls(random.nextInt(urls.size))
     val article = getArticle(url)
-    println("article in session = " + session.getValue("articles"))
     session.putValue("articles", article)
     article
   }
-
 
   /**
    * getting session
