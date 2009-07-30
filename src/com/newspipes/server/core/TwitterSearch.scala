@@ -7,19 +7,16 @@ import scala.xml._
 object TwitterSearch {
   val urlFetchService = URLFetchServiceFactory.getURLFetchService
 
-  def search(query: SearchKeyword) : Array[String] = {
+  def searchForUrls(query: SearchKeyword) : Seq[String] = {
     val response = urlFetchService.fetch(new URL("http://search.twitter.com/search.atom?q=" + query.value + "&filter:links&rpp=100"))
     val stringValue = new String(response.getContent)
     val xml = XML.loadString(stringValue)
-    val urls = extractUrls(xml \ "entry")
-    println("results = " + urls)
-    urls.toArray
+    extractUrls(xml \ "entry")
   }
   
-  def extractUrls(xml:  NodeSeq) : Seq[String] = {
+  def extractUrls(xml:  NodeSeq) =
     xml map (n => extractUrl(n)) filter {case None => false; case _ => true} map {case Some(url) => url; case None => throw new RuntimeException("impossible reach")}
-  }
-  
+
   def extractUrl(element: Node) : Option[String] = {
     val str = element \ "content" map (a => a.child) flatMap (a => a) mkString("")
     //println(str)
