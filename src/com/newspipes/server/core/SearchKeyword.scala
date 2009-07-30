@@ -34,7 +34,7 @@ class SearchKeyword(
     case _ => redirectedUrls
   }
 
-  private def hasUrl(url: String): Boolean = redirectedUrl match {
+  private def hasUrl(url: String): Boolean = redirectedUrls match {
     case null => false
     case urls => urls exists (a => url == a.rawUrl || url == a.resolvedUrl)
   }
